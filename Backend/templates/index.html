@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Mail Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Phishing Mail Detection</h2>
+        <label for="text-input">Enter your text...</label>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <textarea id="text-input" name="text" accept="text/*"></textarea>
+            <button type="submit">Scan</button>
+        </form>
+        <div class="result">
+            {% if result %}
+                <h3>{{ 'No Phishing detected' if result == 'Not Phishing' else 'Phishing detected' }}</h3>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

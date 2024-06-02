@@ -1,15 +1,23 @@
 {
-  "name": "Phishing Detector",
-  "description" : "Detects the phising Emails",
-  "version": "0.0.1",
-  "manifest_version": 3,
-  "action":{
-    "default_popup" : "popup.html",
-    "default_icon" : "logo.png"
-  },
+  "manifest_version": 2,
+  "name": "Phishing Text Detector",
+  "version": "1.0",
   "permissions": [
     "storage",
     "contextMenus",
-    "activeTab"
-  ]
-} 
+    "activeTab",
+    "http://127.0.0.1:5000/predict"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon-16.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
+  }
+}

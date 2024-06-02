@@ -9,9 +9,12 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "checkPhishing") {
     const selectedText = info.selectionText;
+    console.log(selectedText);
+
+    // Store the selected text in local storage
     chrome.storage.local.set({ "selectedText": selectedText }, () => {
-      chrome.action.setPopup({ tabId: tab.id, popup: 'popup.html' });
-      chrome.action.openPopup();
+      // Open the popup window
+      chrome.browserAction.openPopup();
     });
   }
 });

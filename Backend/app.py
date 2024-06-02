@@ -1,12 +1,16 @@
-from flask import Flask, request, jsonify,render_template
+from flask import Flask, request, render_template
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
+import logging
 
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
 # Load tokenizer and model
 model_name = "bert-base-uncased"
-model_dir = "C:\\Users\\lenovo\\Desktop\\Phising\\Backend\\model_folder"  
+model_dir = "C:\\Users\\lenovo\\Desktop\\Phising\\Backend\\model_folder"
 
 tokenizer = BertTokenizer.from_pretrained(model_dir)
 model = BertForSequenceClassification.from_pretrained(model_dir, num_labels=2)
@@ -15,7 +19,7 @@ model = BertForSequenceClassification.from_pretrained(model_dir, num_labels=2)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-def preprocess_input(text, tokenizer, max_len):
+def preprocess_input(text, tokenizer, max_len=128):
     encoding = tokenizer.encode_plus(
         text,
         add_special_tokens=True,
@@ -42,18 +46,20 @@ def predict_label(text, model, tokenizer, max_len):
     predicted_label = torch.argmax(logits, dim=1).item()
     return predicted_label
 
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    result = None
     if request.method == 'POST':
-        data = request.json
-        if data == "":
-            return jsonify({'error' : 'No text Selected'})
-        try:
-            prediction = predict_label(data,model, tokenizer, 128)
-            label = {'prediction' : prediction}
-            return jsonify(label)
-        except:
-            return jsonify({'error' : 'errow during prediction'})
-    
+        text = request.form.get('text')
+        if text:
+            logging.info(f'Received text for prediction: {text}')
+            try:
+                prediction = predict_label(text, model, tokenizer, 512)
+                result = "Phishing" if prediction == 1 else "Not Phishing"
+            except Exception as e:
+                logging.error(f'Error during prediction: {e}')
+                result = 'Error during prediction'
+    return render_template('index.html', result=result)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)

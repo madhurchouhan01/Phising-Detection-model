@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   chrome.storage.local.get("selectedText", function(data) {
     const selectedText = data.selectedText;
+    console.log("Selected Text: ", selectedText); // Log selected text for debugging
+
     if (selectedText) {
       fetch('http://127.0.0.1:5000/predict', {
         method: 'POST',
@@ -16,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return response.json();
       })
       .then(data => {
+        console.log("Server response: ", data); // Log server response for debugging
+
         if (data && data.label !== undefined) {
           document.getElementById('result').innerText = `Result: ${data.label}`;
         } else {
